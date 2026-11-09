@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GYM GRID | Membership Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --panel: #ffffff;
+      --text: #1d2724;
+      --muted: #69756f;
+      --primary: #147d63;
+      --primary-dark: #0c604a;
+      --nav: #16231f;
+      --border: #e6eaf0;
+      --green: #168653;
+      --red: #d64545;
+      --shadow: 0 8px 24px rgba(20, 30, 50, .08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "DM Sans", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .hidden { display: none !important; }
+
+    /* LOGIN PAGE */
+    .login-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      background: #111722;
+    }
+    .login-photo {
+      min-height: 100vh;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,.28), rgba(0,0,0,.55)),
+        url("./WhatsApp%20Image%202026-11-09%20at%203.21.13%20PM.jpeg") center/cover no-repeat;
+      display: flex;
+      align-items: flex-end;
+      padding: 55px;
+      color: white;
+    }
+    .login-photo h1 { font-size: clamp(34px, 5vw, 60px); margin: 0 0 12px; }
+    .login-photo p { font-size: 18px; max-width: 520px; line-height: 1.6; }
+    .login-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      background: #fff;
+    }
+    .login-card { width: 100%; max-width: 390px; }
+    .brand { color: var(--primary); font-family: "Barlow Condensed", sans-serif; font-weight: 900; letter-spacing: 1.5px; font-size: 29px; }
+    .login-photo .brand { color: white; font-size: clamp(42px, 6vw, 72px); }
+    .login-card h2 { margin: 24px 0 8px; font-size: 28px; }
+    .subtext { color: var(--muted); margin: 0 0 26px; line-height: 1.5; }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 7px; }
+    .field input, .field select, .toolbar input, .toolbar select {
+      width: 100%; border: 1px solid var(--border); border-radius: 9px;
+      padding: 12px 13px; background: white; outline: none;
+    }
+    .field input:focus, .field select:focus, .toolbar input:focus {
+      border-color: var(--primary); box-shadow: 0 0 0 3px rgba(232,93,4,.10);
+    }
+    .btn {
+      border: 0; border-radius: 9px; padding: 11px 16px;
+      background: var(--primary); color: white; font-weight: 700;
+    }
+    .btn:hover { background: var(--primary-dark); }
+    .btn.secondary { background: #edf0f4; color: #263238; }
+    .btn.danger { background: #fff0f0; color: var(--red); }
+    .btn.small { padding: 7px 10px; font-size: 12px; }
+    .login-btn { width: 100%; padding: 13px; margin-top: 4px; }
+    .error { color: var(--red); min-height: 20px; font-size: 13px; margin-top: 12px; }
+
+    /* APPLICATION LAYOUT */
+    .app { min-height: 100vh; display: grid; grid-template-columns: 245px 1fr; }
+    .sidebar {
+      background: var(--nav); color: white; padding: 25px 16px;
+      display: flex; flex-direction: column; gap: 22px;
+    }
+    .sidebar .brand { padding: 0 12px; }
+    .side-label { color: #8993a4; text-transform: uppercase; font-size: 10px; letter-spacing: 1.4px; padding: 0 12px; }
+    .nav-list { display: grid; gap: 6px; }
+    .nav-btn {
+      width: 100%; border: 0; text-align: left; padding: 12px;
+      border-radius: 9px; color: #cbd2dc; background: transparent;
+    }
+    .nav-btn:hover, .nav-btn.active { background: #2a303c; color: white; }
+    .nav-btn.active { border-left: 3px solid var(--primary); }
+    .sidebar-bottom { margin-top: auto; }
+    .main { min-width: 0; padding: 26px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 22px; }
+    .topbar h1 { font-size: 25px; margin: 0; }
+    .admin-tag { background: #fff; border: 1px solid var(--border); border-radius: 30px; padding: 9px 13px; font-size: 13px; }
+    .banner {
+      min-height: 225px; border-radius: 16px; overflow: hidden; color: white;
+      background: linear-gradient(90deg, rgba(0,0,0,.72), rgba(0,0,0,.12)),
+                  url("./images/gym-banner.jpg") center 55%/cover no-repeat;
+      display: flex; align-items: center; padding: 35px; margin-bottom: 22px;
+      box-shadow: var(--shadow);
+    }
+    .banner h2 { font-size: clamp(25px, 3vw, 38px); margin: 0 0 9px; }
+    .banner p { margin: 0; color: #f1f1f1; max-width: 520px; line-height: 1.5; }
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 15px; margin-bottom: 22px; }
+    .stat-card, .panel {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 13px; padding: 19px; box-shadow: var(--shadow);
+    }
+    .stat-card .stat-label { color: var(--muted); font-size: 13px; }
+    .stat-card .stat-value { font-size: 29px; font-weight: 800; margin-top: 9px; }
+    .stat-card .stat-icon { float: right; font-size: 23px; }
+    .content-section { display: none; }
+    .content-section.active { display: block; }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 17px; }
+    .section-heading h2 { margin: 0; font-size: 21px; }
+    .panel { margin-bottom: 18px; }
+    .form-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 13px; align-items: end; }
+    .form-grid .field { margin: 0; }
+    .form-actions { display: flex; gap: 9px; align-items: end; }
+    .toolbar { display: flex; gap: 10px; margin: 14px 0; }
+    .toolbar input { max-width: 330px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 620px; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid var(--border); text-align: left; font-size: 13px; }
+    th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; background: #fafbfc; }
+    .status { display: inline-block; border-radius: 20px; padding: 5px 9px; font-size: 11px; font-weight: 700; }
+    .status.active { background: #e8f7ef; color: var(--green); }
+    .status.expired { background: #fff0f0; color: var(--red); }
+    .empty { text-align: center; color: var(--muted); padding: 22px; }
+    .hint { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .quick-actions { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin: 18px 0 24px; }
+    .quick-action { min-height: 105px; padding: 17px; text-align: left; border: 1px solid var(--border); border-radius: 10px; background: white; color: var(--text); box-shadow: var(--shadow); }
+    .quick-action:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .quick-action strong { display: block; margin-top: 10px; font-size: 14px; }
+    .quick-action span { color: var(--primary); font-size: 20px; }
+    .segmented { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+    .segmented .btn.active { background: var(--primary-dark); color: white; }
+    .count-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .count-button { width: 100%; padding: 18px; border: 1px solid var(--border); border-radius: 9px; background: white; text-align: left; color: var(--text); }
+    .count-button strong { display: block; font-size: 27px; margin-top: 8px; }
+    .form-grid .field input[readonly] { background: #f4f6f5; color: var(--muted); }
+    .plan-price { font-weight: 800; color: var(--primary-dark); }
+    .subtle { color: var(--muted); font-size: 12px; }
+    .section-banner {
+      min-height: 150px; margin-bottom: 20px; padding: 26px; border-radius: 9px;
+      display: flex; align-items: flex-end; color: white; background-position: center; background-size: cover;
+      box-shadow: var(--shadow);
+    }
+    .section-banner h2 { margin: 0; font: 800 30px/1 "Barlow Condensed", sans-serif; letter-spacing: 1px; }
+    .section-banner.members-image { background-image: linear-gradient(90deg, rgba(10,25,20,.78), rgba(10,25,20,.06)), url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1400&q=85"); }
+    .section-banner.plans-image { background-image: linear-gradient(90deg, rgba(10,25,20,.78), rgba(10,25,20,.06)), url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1400&q=85"); }
+    .section-banner.memberships-image { background-image: linear-gradient(90deg, rgba(10,25,20,.78), rgba(10,25,20,.06)), url("https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&w=1400&q=85"); }
+    .section-banner.status-image { background-image: linear-gradient(90deg, rgba(10,25,20,.78), rgba(10,25,20,.06)), url("https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=1400&q=85"); }
+    .section-banner.renewal-image { background-image: linear-gradient(90deg, rgba(10,25,20,.78), rgba(10,25,20,.06)), url("https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=1400&q=85"); }
+    .section-banner.payments-image { background-image: linear-gradient(90deg, rgba(10,25,20,.78), rgba(10,25,20,.06)), url("https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1400&q=85"); }
+    .login-page { background: #16231f; }
+    .login-photo, .banner { background-image: linear-gradient(90deg, rgba(0,0,0,.62), rgba(0,0,0,.10)), url("./WhatsApp%20Image%202026-11-09%20at%203.21.13%20PM.jpeg"); }
+    .nav-btn.active { border-left-color: #77c7a8; }
+    .panel, .stat-card { border-radius: 9px; }
+    .btn { border-radius: 7px; }
+    .admin-tag { border-radius: 7px; }
+    @media (max-width: 950px) { .quick-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 650px) {
+      .quick-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .count-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 950px) {
+      .app { grid-template-columns: 200px 1fr; }
+      .stats { grid-template-columns: repeat(2,1fr); }
+      .form-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 650px) {
+      .login-page { grid-template-columns: 1fr; }
+      .login-photo { min-height: 260px; padding: 25px; }
+      .login-panel { padding: 28px 20px; }
+      .app { grid-template-columns: minmax(0, 1fr); }
+      .sidebar { padding: 14px; }
+      .sidebar, .nav-list { min-width: 0; max-width: 100%; }
+      .sidebar .brand { padding: 4px 8px; }
+      .side-label, .sidebar-bottom { display: none; }
+      .nav-list { display: flex; overflow-x: auto; }
+      .nav-btn { width: auto; white-space: nowrap; }
+      .main { padding: 17px; }
+      .banner { min-height: 190px; padding: 22px; }
+      .stats { grid-template-columns: repeat(2,1fr); gap: 10px; }
+      .stat-card { padding: 14px; }
+      .stat-card .stat-value { font-size: 23px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .topbar h1 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ADMIN LOGIN PAGE -->
+  <div id="loginPage" class="login-page">
+    <div class="login-photo">
+      <div>
+        <h1 class="brand">GYM GRID</h1>
+        <p>Clean, minimalist membership management for a more connected gym.</p>
+      </div>
+    </div>
+    <div class="login-panel">
+      <div class="login-card">
+        <div class="brand">GYM GRID</div>
+        <h2>Admin Login</h2>
+        <p class="subtext">Sign in securely to manage your gym.</p>
+        <form id="loginForm">
+          <div class="field">
+            <label for="username">Email</label>
+            <input id="username" type="email" placeholder="Enter your admin email" autocomplete="username" required>
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" type="password" placeholder="Enter password" autocomplete="current-password" required>
+          </div>
+          <button class="btn login-btn" type="submit">Sign in</button>
+          <div id="loginError" class="error" role="alert"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN APPLICATION -->
+  <div id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand">GYM GRID</div>
+      <div>
+        <div class="side-label">Main menu</div>
+        <nav class="nav-list">
+          <button class="nav-btn" data-section="members">01 &nbsp; Add Members</button>
+          <button class="nav-btn" data-section="plans">02 &nbsp; Plans</button>
+          <button class="nav-btn" data-section="duration">03 &nbsp; Memberships</button>
+          <button class="nav-btn" data-section="expiry">04 &nbsp; Status</button>
+          <button class="nav-btn" data-section="renewal">05 &nbsp; Renewal</button>
+          <button class="nav-btn" data-section="payments">06 &nbsp; Payments</button>
+        </nav>
+      </div>
+      <div class="sidebar-bottom">
+        <button class="nav-btn" id="logoutBtn">↪ &nbsp; Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1 id="pageTitle">Dashboard</h1>
+          <div class="admin-tag">● &nbsp; Administrator</div>
+      </header>
+
+      <!-- DASHBOARD HOME -->
+      <section id="home" class="content-section active">
+        <div class="banner">
+          <div>
+            <h2>Membership desk</h2>
+            <p>One clear view of your members, plans, active terms and renewals.</p>
+          </div>
+        </div>
+        <div class="quick-actions">
+          <button class="quick-action" data-open-section="members"><span>＋</span><strong>Add Members</strong></button>
+          <button class="quick-action" data-open-section="plans"><span>▤</span><strong>Plans</strong></button>
+          <button class="quick-action" data-open-section="duration"><span>◷</span><strong>Memberships</strong></button>
+          <button class="quick-action" data-open-section="expiry"><span>◉</span><strong>Status</strong></button>
+          <button class="quick-action" data-open-section="renewal"><span>↻</span><strong>Renewal</strong></button>
+        </div>
+        <div class="stats">
+          <div class="stat-card"><span class="stat-icon">01</span><div class="stat-label">Members</div><div class="stat-value" id="totalMembers">0</div></div>
+          <div class="stat-card"><span class="stat-icon">02</span><div class="stat-label">Available plans</div><div class="stat-value" id="totalPlans">4</div></div>
+          <div class="stat-card"><span class="stat-icon">03</span><div class="stat-label">Active memberships</div><div class="stat-value" id="activeMemberships">0</div></div>
+          <div class="stat-card"><span class="stat-icon">04</span><div class="stat-label">Expired memberships</div><div class="stat-value" id="expiredMemberships">0</div></div>
+        </div>
+        <div class="panel">
+          <div class="section-heading"><h2>Default membership start date</h2></div>
+          <div class="form-grid">
+            <div class="field"><label for="defaultStartDate">Default start date</label><input id="defaultStartDate" type="date"></div>
+            <div class="form-actions"><button class="btn" id="saveDefaultDate" type="button">Save default</button></div>
+          </div>
+          <p class="hint" style="margin:12px 0 0">New memberships use this date by default. End dates are calculated automatically from the selected plan.</p>
+        </div>
+      </section>
+
+      <!-- MEMBERS -->
+      <section id="members" class="content-section">
+        <div class="section-banner members-image"><h2>Member register</h2></div>
+        <div class="section-heading"><h2>Add or view members</h2></div>
+        <div class="panel">
+          <form id="memberForm" class="form-grid">
+            <div class="field"><label for="memberName">Name</label><input id="memberName" placeholder="Enter member name" required></div>
+            <div class="field"><label for="memberPlan">Membership plan</label><select id="memberPlan" required></select></div>
+            <div class="field"><label for="memberDuration">Membership duration</label><input id="memberDuration" readonly></div>
+            <div class="field"><label for="memberStartDate">Starting date</label><input id="memberStartDate" type="date" required></div>
+            <div class="field"><label for="memberEndDate">Ending date</label><input id="memberEndDate" type="date" readonly required></div>
+            <div class="field"><label for="memberPhone">Mobile number</label><input id="memberPhone" type="tel" placeholder="Enter mobile number" required></div>
+            <div class="field"><label for="memberPaymentMethod">Payment method</label><select id="memberPaymentMethod" required><option value="Cash">Cash</option><option value="UPI">UPI</option></select></div>
+            <div class="form-actions"><button class="btn" type="submit">Add member</button></div>
+          </form>
+        </div>
+        <div class="panel">
+          <div class="section-heading"><h2>Member register</h2><span class="subtle">Delete moves the member and related records to hidden trash.</span></div>
+          <div class="toolbar"><input id="memberSearch" placeholder="Search by name, mobile or plan"></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Member ID</th><th>Name</th><th>Plan</th><th>Duration</th><th>Start</th><th>End</th><th>Mobile</th><th>Action</th></tr></thead>
+            <tbody id="memberTable"></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- PLANS -->
+      <section id="plans" class="content-section">
+        <div class="section-banner plans-image"><h2>Find your pace</h2></div>
+        <div class="section-heading"><h2>Membership plans</h2></div>
+        <div class="panel">
+          <div class="table-wrap"><table>
+            <thead><tr><th>Duration</th><th>Plan</th><th>Price</th><th>Discount</th></tr></thead>
+            <tbody id="planTable"></tbody>
+          </table></div>
+          <p class="hint" style="margin-bottom:0">Prices are displayed in Indian rupees.</p>
+        </div>
+      </section>
+
+      <!-- ASSIGN MEMBERSHIP -->
+      <section id="duration" class="content-section">
+        <div class="section-banner memberships-image"><h2>Membership timeline</h2></div>
+        <div class="section-heading"><h2>Memberships by duration</h2></div>
+        <div class="segmented" id="durationFilters">
+          <button class="btn secondary active" data-months="all">All</button>
+          <button class="btn secondary" data-months="1">1 month</button>
+          <button class="btn secondary" data-months="3">3 months</button>
+          <button class="btn secondary" data-months="6">6 months</button>
+          <button class="btn secondary" data-months="12">12 months</button>
+        </div>
+        <div class="panel">
+          <div class="section-heading"><h2>Starting and ending dates</h2><span class="subtle">Sorted by starting date</span></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Membership ID</th><th>Member ID</th><th>Name</th><th>Plan</th><th>Duration</th><th>Starting date</th><th>Ending date</th><th>Status</th></tr></thead>
+            <tbody id="membershipTable"></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- EXPIRY -->
+      <section id="expiry" class="content-section">
+        <div class="section-banner status-image"><h2>Stay on track</h2></div>
+        <div class="section-heading"><h2>Membership status</h2></div>
+        <div class="segmented" id="statusFilters">
+          <button class="btn secondary active" data-status="active">Active</button>
+          <button class="btn secondary" data-status="expired">Completely expired</button>
+        </div>
+        <div class="panel">
+          <div class="section-heading"><h2 id="statusHeading">Active memberships</h2></div>
+          <div class="count-grid" id="statusCounts"></div>
+        </div>
+      </section>
+
+      <!-- RENEWAL -->
+      <section id="renewal" class="content-section">
+        <div class="section-banner renewal-image"><h2>Keep your momentum</h2></div>
+        <div class="section-heading"><h2>Renew membership</h2></div>
+        <div class="panel">
+          <form id="renewalForm" class="form-grid">
+            <div class="field"><label for="renewMember">Member</label><select id="renewMember" required></select></div>
+            <div class="field"><label for="renewPlan">Renewal plan</label><select id="renewPlan" required></select></div>
+            <div class="field"><label for="renewDate">Renewal date</label><input id="renewDate" type="date" required></div>
+            <div class="field"><label for="renewStartDate">New term starts</label><input id="renewStartDate" type="date" readonly></div>
+            <div class="field"><label for="renewEndDate">New term ends</label><input id="renewEndDate" type="date" readonly></div>
+            <div class="field"><label for="renewPaymentMethod">Payment method</label><select id="renewPaymentMethod" required><option value="Cash">Cash</option><option value="UPI">UPI</option></select></div>
+            <div class="form-actions"><button class="btn" type="submit">Confirm renewal</button></div>
+          </form>
+          <p class="hint" style="margin:12px 0 0">Renew before expiry to continue from the current expiry date. If the membership has expired, the new term starts on the renewal date.</p>
+        </div>
+        <div class="panel">
+          <div class="section-heading"><h2>Renewal history</h2></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Member</th><th>Plan</th><th>Renewed on</th><th>Term starts</th><th>Term ends</th></tr></thead>
+            <tbody id="renewalTable"></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section id="payments" class="content-section">
+        <div class="section-banner payments-image"><h2>Payment ledger</h2></div>
+        <div class="section-heading"><h2>Payment history</h2></div>
+        <div class="panel"><div class="table-wrap"><table>
+          <thead><tr><th>Member</th><th>Plan</th><th>Amount</th><th>Date</th><th>Method</th><th>Type</th></tr></thead>
+          <tbody id="paymentTable"></tbody>
+        </table></div></div>
+      </section>
+    </main>
+  </div>
+
+  <script type="text/plain" aria-hidden="true">
+    // DEMO ADMIN CREDENTIALS.
+    // This front-end-only login is for a hackathon prototype, not production security.
+
+    // Read saved data from this browser. If no data exists, start with empty arrays.
+    const $ = (id) => document.getElementById(id);
+
+    // LOGOUT
+    $("logoutBtn").addEventListener("click", function() {
+      $("app").classList.add("hidden");
+      $("loginPage").classList.remove("hidden");
+      $("loginForm").reset();
+      $("loginError").textContent = "";
+    });
+
+    // NAVIGATION BETWEEN DASHBOARD SECTIONS
+    document.querySelectorAll(".nav-btn[data-section]").forEach(button => {
+      button.addEventListener("click", function() {
+        const sectionId = this.dataset.section;
+        document.querySelectorAll(".content-section").forEach(section => section.classList.remove("active"));
+        $(sectionId).classList.add("active");
+        document.querySelectorAll(".nav-btn[data-section]").forEach(btn => btn.classList.remove("active"));
+        this.classList.add("active");
+
+        const titles = {
+          home: "Dashboard", members: "Member Management", plans: "Membership Plans",
+          duration: "Assign Membership", expiry: "Expiry Tracking", payments: "Payment Management"
+        };
+        $("pageTitle").textContent = titles[sectionId];
+        refreshAll();
+      });
+    });
+
+    // SAVE ALL DATA TO BROWSER STORAGE
+    function saveData() {
+    }
+
+    // DATE HELPERS
+    function todayString() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    }
+    function addMonthsToDate(dateText, months) {
+      const d = new Date(dateText + "T12:00:00");
+      const originalDay = d.getDate();
+      d.setMonth(d.getMonth() + Number(months));
+      // Avoid rollover errors for dates such as January 31.
+      if (d.getDate() < originalDay) d.setDate(0);
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    }
+    function formatMoney(value) {
+      return "₹" + Number(value).toLocaleString("en-IN", {maximumFractionDigits: 2});
+    }
+    function getMemberName(memberId) {
+      const member = members.find(m => m.id === memberId);
+      return member ? member.name : "Deleted Member";
+    }
+    function getPlan(planId) {
+      return plans.find(p => p.id === planId);
+    }
+    function membershipStatus(item) {
+      return item.expiryDate >= todayString() ? "Active" : "Expired";
+    }
+    function showEmpty(row, colspan, message) {
+      row.innerHTML = `<tr><td class="empty" colspan="${colspan}">${message}</td></tr>`;
+    }
+
+    // ADD MEMBER
+    $("memberForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const member = {
+        id: Date.now(),
+        name: $("memberName").value.trim(),
+        email: $("memberEmail").value.trim(),
+        phone: $("memberPhone").value.trim()
+      };
+      members.push(member);
+      saveData();
+      this.reset();
+      refreshAll();
+      alert("Member added successfully.");
+    });
+
+    // SEARCH MEMBERS
+    $("memberSearch").addEventListener("input", renderMembers);
+
+    // DELETE MEMBER AND RELATED RECORDS
+    function deleteMember(id) {
+      if (!confirm("Delete this member and their membership/payment records?")) return;
+      members = members.filter(member => member.id !== id);
+      memberships = memberships.filter(item => item.memberId !== id);
+      payments = payments.filter(item => item.memberId !== id);
+      saveData();
+      refreshAll();
+    }
+
+    // CREATE MEMBERSHIP PLAN
+    $("planForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      plans.push({
+        id: Date.now(),
+        name: $("planName").value.trim(),
+        price: Number($("planPrice").value),
+        months: Number($("planMonths").value)
+      });
+      saveData();
+      this.reset();
+      refreshAll();
+      alert("Membership plan created successfully.");
+    });
+
+    // DELETE PLAN ONLY IF IT IS NOT ASSIGNED
+    function deletePlan(id) {
+      if (memberships.some(item => item.planId === id)) {
+        alert("This plan is assigned to a member. It cannot be deleted.");
+        return;
+      }
+      if (!confirm("Delete this membership plan?")) return;
+      plans = plans.filter(plan => plan.id !== id);
+      saveData();
+      refreshAll();
+    }
+
+    // ASSIGN A PLAN TO A MEMBER
+    $("membershipForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const memberId = Number($("assignMember").value);
+      const planId = Number($("assignPlan").value);
+      const startDate = $("startDate").value;
+      const plan = getPlan(planId);
+
+      if (!members.some(m => m.id === memberId) || !plan || !startDate) {
+        alert("Please add a member and a plan before assigning a membership.");
+        return;
+      }
+      const alreadyActive = memberships.some(item =>
+        item.memberId === memberId && item.expiryDate >= todayString()
+      );
+      if (alreadyActive) {
+        alert("This member already has an active membership.");
+        return;
+      }
+
+      memberships.push({
+        id: Date.now(),
+        memberId,
+        planId,
+        startDate,
+        expiryDate: addMonthsToDate(startDate, plan.months)
+      });
+      saveData();
+      this.reset();
+      refreshAll();
+      alert("Membership assigned successfully.");
+    });
+
+    // RECORD A PAYMENT
+    $("paymentForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const memberId = Number($("paymentMember").value);
+      if (!members.some(m => m.id === memberId)) {
+        alert("Please add a member before recording a payment.");
+        return;
+      }
+      payments.push({
+        id: Date.now(),
+        memberId,
+        amount: Number($("paymentAmount").value),
+        date: $("paymentDate").value,
+        method: $("paymentMethod").value
+      });
+      saveData();
+      this.reset();
+      refreshAll();
+      alert("Payment saved successfully.");
+    });
+
+    // RENDER MEMBER TABLE
+    function renderMembers() {
+      const query = $("memberSearch").value.toLowerCase().trim();
+      const filtered = members.filter(m =>
+        m.name.toLowerCase().includes(query) ||
+        m.email.toLowerCase().includes(query) ||
+        m.phone.toLowerCase().includes(query)
+      );
+      const tbody = $("memberTable");
+      if (!filtered.length) return showEmpty(tbody, 5, members.length ? "No matching members found." : "No members added yet.");
+      tbody.innerHTML = filtered.map(m => `
+        <tr>
+          <td>${m.id}</td><td>${escapeHTML(m.name)}</td>
+          <td>${escapeHTML(m.email)}</td><td>${escapeHTML(m.phone)}</td>
+          <td><button class="btn danger small" onclick="deleteMember(${m.id})">Delete</button></td>
+        </tr>`).join("");
+    }
+
+    // RENDER PLANS
+    function renderPlans() {
+      const tbody = $("planTable");
+      if (!plans.length) return showEmpty(tbody, 5, "No plans created yet.");
+      tbody.innerHTML = plans.map(p => `
+        <tr>
+          <td>${p.id}</td><td>${escapeHTML(p.name)}</td>
+          <td>${formatMoney(p.price)}</td><td>${p.months} month(s)</td>
+          <td><button class="btn danger small" onclick="deletePlan(${p.id})">Delete</button></td>
+        </tr>`).join("");
+    }
+
+    // RENDER MEMBERSHIP RECORDS AND EXPIRY STATUS
+    function renderMemberships() {
+      const tbody = $("membershipTable");
+      if (!memberships.length) showEmpty(tbody, 5, "No memberships assigned yet.");
+      else tbody.innerHTML = memberships.map(item => {
+        const plan = getPlan(item.planId);
+        const status = membershipStatus(item);
+        return `<tr>
+          <td>${escapeHTML(getMemberName(item.memberId))}</td>
+          <td>${plan ? escapeHTML(plan.name) : "Deleted Plan"}</td>
+          <td>${item.startDate}</td><td>${item.expiryDate}</td>
+          <td><span class="status ${status.toLowerCase()}">${status}</span></td>
+        </tr>`;
+      }).join("");
+
+      const active = memberships.filter(item => membershipStatus(item) === "Active");
+      const expired = memberships.filter(item => membershipStatus(item) === "Expired");
+      $("expiryActive").textContent = active.length;
+      $("expiryExpired").textContent = expired.length;
+
+      const expiryBody = $("expiryTable");
+      if (!memberships.length) showEmpty(expiryBody, 4, "No membership records available.");
+      else expiryBody.innerHTML = memberships.map(item => {
+        const plan = getPlan(item.planId);
+        const status = membershipStatus(item);
+        return `<tr>
+          <td>${escapeHTML(getMemberName(item.memberId))}</td>
+          <td>${plan ? escapeHTML(plan.name) : "Deleted Plan"}</td>
+          <td>${item.expiryDate}</td>
+          <td><span class="status ${status.toLowerCase()}">${status}</span></td>
+        </tr>`;
+      }).join("");
+    }
+
+    // RENDER PAYMENT HISTORY
+    function renderPayments() {
+      const tbody = $("paymentTable");
+      if (!payments.length) return showEmpty(tbody, 4, "No payments recorded yet.");
+      tbody.innerHTML = payments.map(p => `
+        <tr>
+          <td>${escapeHTML(getMemberName(p.memberId))}</td>
+          <td>${formatMoney(p.amount)}</td><td>${p.date}</td><td>${escapeHTML(p.method)}</td>
+        </tr>`).join("");
+    }
+
+    // FILL MEMBER AND PLAN DROPDOWNS
+    function renderDropdowns() {
+      const memberOptions = members.map(m =>
+        `<option value="${m.id}">${escapeHTML(m.name)}</option>`
+      ).join("");
+      $("assignMember").innerHTML = memberOptions || '<option value="">Add a member first</option>';
+      $("paymentMember").innerHTML = memberOptions || '<option value="">Add a member first</option>';
+
+      $("assignPlan").innerHTML = plans.map(p =>
+        `<option value="${p.id}">${escapeHTML(p.name)} - ${formatMoney(p.price)}</option>`
+      ).join("") || '<option value="">Create a plan first</option>';
+    }
+
+    // UPDATE DASHBOARD CARDS AND ALL TABLES
+    function refreshAll() {
+      $("totalMembers").textContent = members.length;
+      $("totalPlans").textContent = plans.length;
+      $("activeMemberships").textContent = memberships.filter(item => membershipStatus(item) === "Active").length;
+      const revenue = payments.reduce((sum, p) => sum + Number(p.amount), 0);
+      $("totalRevenue").textContent = formatMoney(revenue);
+
+      renderMembers();
+      renderPlans();
+      renderMemberships();
+      renderPayments();
+      renderDropdowns();
+    }
+
+    // Escape text before inserting user-entered values into HTML.
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[char]));
+    }
+
+    // Initial dashboard values are rendered when the admin logs in.
+  </script>
+  <script type="text/plain" aria-hidden="true">
+    const planCatalog = [
+      { id: "plan-1", months: 1, name: "Normal", price: 1000, discount: 0 },
+      { id: "plan-3", months: 3, name: "Elite Plus", price: 2800, discount: 200 },
+      { id: "plan-6", months: 6, name: "Elite Pro", price: 5500, discount: 500 },
+      { id: "plan-12", months: 12, name: "Elite Premium", price: 10000, discount: 2000 }
+    ];
+    const $ = id => document.getElementById(id);
+
+    function todayString() {
+      const date = new Date();
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    }
+    function addMonthsToDate(dateText, months) {
+      const date = new Date(`${dateText}T12:00:00`);
+      const originalDay = date.getDate();
+      date.setMonth(date.getMonth() + Number(months));
+      if (date.getDate() < originalDay) date.setDate(0);
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    }
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[char]));
+    }
+    function readState() {
+      return { members: [], memberships: [], payments: [], trash: [], defaultStartDate: todayString() };
+    }
+    let state = readState();
+    let selectedDuration = "all";
+    let selectedStatus = "active";
+
+    function saveState() {
+    }
+    async function completeCheckout(button) {
+      const label = button.textContent;
+      button.disabled = true;
+      button.textContent = "Processing payment...";
+      await new Promise(resolve => window.setTimeout(resolve, 5000));
+      button.disabled = false;
+      button.textContent = label;
+    }
+    function getPlan(planId) {
+      return planCatalog.find(plan => plan.id === planId);
+    }
+    function getMember(memberId) {
+      return state.members.find(member => member.id === memberId);
+    }
+    function membershipsFor(memberId) {
+      return state.memberships.filter(item => item.memberId === memberId)
+        .sort((a, b) => a.startDate.localeCompare(b.startDate) || (a.createdAt || 0) - (b.createdAt || 0));
+    }
+    function currentMembership(memberId, asOf = todayString()) {
+      const records = membershipsFor(memberId);
+      const started = records.filter(item => item.startDate <= asOf);
+      return started[started.length - 1] || records[0] || null;
+    }
+    function isMembershipActive(item, asOf = todayString()) {
+      return item.startDate <= asOf && item.expiryDate >= asOf;
+    }
+    function isMembershipExpired(item, asOf = todayString()) {
+      return item.expiryDate < asOf;
+    }
+    function money(value) {
+      return "₹" + Number(value).toLocaleString("en-IN", { maximumFractionDigits: 0 });
+    }
+    function showEmpty(tbody, columns, message) {
+      tbody.innerHTML = `<tr><td class="empty" colspan="${columns}">${escapeHTML(message)}</td></tr>`;
+    }
+    function autoArchiveInactiveMembers() {
+      const cutoff = addMonthsToDate(todayString(), -3);
+      const inactive = state.members.filter(member => {
+        const records = membershipsFor(member.id);
+        return records.length && records[records.length - 1].expiryDate < cutoff;
+      });
+      if (!inactive.length) return;
+      const ids = new Set(inactive.map(member => member.id));
+      state.trash.push(...inactive.map(member => ({
+        deletedAt: todayString(), reason: "Automatically archived after 3 months expired",
+        member, memberships: state.memberships.filter(item => item.memberId === member.id),
+        payments: state.payments.filter(payment => payment.memberId === member.id)
+      })));
+      state.members = state.members.filter(member => !ids.has(member.id));
+      state.memberships = state.memberships.filter(item => !ids.has(item.memberId));
+      state.payments = state.payments.filter(payment => !ids.has(payment.memberId));
+      saveState();
+    }
+    function renderPlans() {
+      $("planTable").innerHTML = planCatalog.map(plan => `
+        <tr><td>${plan.months} month${plan.months > 1 ? "s" : ""}</td><td>${plan.name}</td>
+        <td class="plan-price">${money(plan.price)}</td><td>${money(plan.discount)} off</td></tr>`).join("");
+    }
+    function renderMembers() {
+      const query = $("memberSearch").value.trim().toLowerCase();
+      const filtered = state.members.filter(member => {
+        const current = currentMembership(member.id);
+        const plan = current && getPlan(current.planId);
+        return [member.name, member.phone, plan && plan.name].some(value => String(value || "").toLowerCase().includes(query));
+      });
+      const tbody = $("memberTable");
+      if (!filtered.length) return showEmpty(tbody, 8, state.members.length ? "No matching members found." : "No members added yet.");
+      tbody.innerHTML = filtered.map(member => {
+        const current = currentMembership(member.id);
+        const plan = current && getPlan(current.planId);
+        return `<tr><td>${escapeHTML(member.id)}</td><td>${escapeHTML(member.name)}</td>
+          <td>${plan ? plan.name : "No plan"}</td><td>${plan ? plan.months + (plan.months === 1 ? " month" : " months") : "-"}</td>
+          <td>${current ? current.startDate : "-"}</td><td>${current ? current.expiryDate : "-"}</td>
+          <td>${escapeHTML(member.phone)}</td><td><button class="btn danger small" data-delete-member="${escapeHTML(member.id)}">Delete</button></td></tr>`;
+      }).join("");
+    }
+    function renderMemberships() {
+      const ordered = [...state.memberships].sort((a, b) => a.startDate.localeCompare(b.startDate));
+      const filtered = ordered.filter(item => selectedDuration === "all" || String(item.months) === selectedDuration);
+      const tbody = $("membershipTable");
+      if (!filtered.length) return showEmpty(tbody, 8, "No memberships in this duration yet.");
+      tbody.innerHTML = filtered.map(item => {
+        const member = getMember(item.memberId);
+        const plan = getPlan(item.planId);
+        return `<tr><td>${escapeHTML(item.id)}</td><td>${escapeHTML(item.memberId)}</td><td>${escapeHTML(member ? member.name : "Archived")}</td>
+          <td>${plan ? plan.name : "-"}</td><td>${item.months} month${item.months === 1 ? "" : "s"}</td><td>${item.startDate}</td><td>${item.expiryDate}</td></tr>`;
+      }).join("");
+    }
+    function renderStatus() {
+      const currentRecords = state.members.map(member => ({ member, item: currentMembership(member.id) })).filter(row => row.item);
+      const isActive = selectedStatus === "active";
+      const counts = planCatalog.map(plan => ({
+        plan,
+        count: currentRecords.filter(row => row.item.months === plan.months && (isActive ? isMembershipActive(row.item) : isMembershipExpired(row.item))).length
+      }));
+      $("statusHeading").textContent = isActive ? "Active memberships" : "Completely expired memberships";
+      $("statusCounts").innerHTML = counts.map(({ plan, count }) => `
+        <div class="count-button"><span>${plan.months} month${plan.months > 1 ? "s" : ""}</span><strong>${count}</strong></div>`).join("");
+    }
+    function fillPlanSelect(select, includePrompt = false) {
+      select.innerHTML = (includePrompt ? '<option value="">Select a plan</option>' : "") + planCatalog.map(plan =>
+        `<option value="${plan.id}">${plan.months} month${plan.months === 1 ? "" : "s"} - ${plan.name} (${money(plan.price)})</option>`).join("");
+    }
+    function renderDropdowns() {
+      fillPlanSelect($("memberPlan"));
+      fillPlanSelect($("renewPlan"));
+      const options = state.members.map(member => `<option value="${escapeHTML(member.id)}">${escapeHTML(member.name)} - ${escapeHTML(member.phone)}</option>`).join("");
+      $("renewMember").innerHTML = options || '<option value="">Add a member first</option>';
+      updateMemberDates();
+      updateRenewalDates();
+    }
+    function updateMemberDates() {
+      const plan = getPlan($("memberPlan").value);
+      $("memberDuration").value = plan ? `${plan.months} month${plan.months > 1 ? "s" : ""}` : "";
+      if (!$("memberStartDate").value) $("memberStartDate").value = state.defaultStartDate || todayString();
+      $("memberEndDate").value = plan && $("memberStartDate").value ? addMonthsToDate($("memberStartDate").value, plan.months) : "";
+    }
+    function updateRenewalDates() {
+      const member = getMember($("renewMember").value);
+      const plan = getPlan($("renewPlan").value);
+      const renewalDate = $("renewDate").value || todayString();
+      const current = member && currentMembership(member.id, renewalDate);
+      const startDate = current && current.expiryDate >= renewalDate ? current.expiryDate : renewalDate;
+      $("renewStartDate").value = startDate;
+      $("renewEndDate").value = plan ? addMonthsToDate(startDate, plan.months) : "";
+    }
+    function renderRenewals() {
+      const renewals = state.memberships.filter(item => item.renewedOn)
+        .sort((a, b) => b.renewedOn.localeCompare(a.renewedOn));
+      const tbody = $("renewalTable");
+      if (!renewals.length) return showEmpty(tbody, 5, "No renewals recorded yet.");
+      tbody.innerHTML = renewals.map(item => {
+        const member = getMember(item.memberId);
+        const plan = getPlan(item.planId);
+        return `<tr><td>${escapeHTML(member ? member.name : "Archived")}</td><td>${plan ? plan.name : "-"}</td>
+          <td>${item.renewedOn}</td><td>${item.startDate}</td><td>${item.expiryDate}</td></tr>`;
+      }).join("");
+    }
+    function renderPayments() {
+      const tbody = $("paymentTable");
+      if (!state.payments.length) return showEmpty(tbody, 6, "No payments recorded yet.");
+      tbody.innerHTML = [...state.payments].sort((a, b) => b.date.localeCompare(a.date)).map(payment => {
+        const member = getMember(payment.memberId);
+        const plan = getPlan(payment.planId);
+        return `<tr><td>${escapeHTML(member ? member.name : "Archived")}</td><td>${plan ? escapeHTML(plan.name) : "-"}</td>
+          <td class="plan-price">${money(payment.amount)}</td><td>${escapeHTML(payment.date)}</td>
+          <td>${escapeHTML(payment.method)}</td><td>${escapeHTML(payment.type)}</td></tr>`;
+      }).join("");
+    }
+    function refreshAll() {
+      $("totalMembers").textContent = state.members.length;
+      $("totalPlans").textContent = planCatalog.length;
+      const activeCount = state.members.filter(member => {
+        const current = currentMembership(member.id);
+        return current && isMembershipActive(current);
+      }).length;
+      $("activeMemberships").textContent = activeCount;
+      $("expiredMemberships").textContent = state.members.filter(member => {
+        const current = currentMembership(member.id);
+        return current && isMembershipExpired(current);
+      }).length;
+      $("defaultStartDate").value = state.defaultStartDate;
+      renderPlans();
+      renderMembers();
+      renderMemberships();
+      renderStatus();
+      renderDropdowns();
+      renderRenewals();
+      renderPayments();
+    }
+    function goToSection(sectionId) {
+      document.querySelectorAll(".content-section").forEach(section => section.classList.toggle("active", section.id === sectionId));
+      document.querySelectorAll(".nav-btn[data-section]").forEach(button => button.classList.toggle("active", button.dataset.section === sectionId));
+      const titles = { home: "Dashboard", members: "Add Members", plans: "Plans", duration: "Memberships", expiry: "Status", renewal: "Renewal", payments: "Payments" };
+      $("pageTitle").textContent = titles[sectionId] || "Dashboard";
+      refreshAll();
+    }
+
+    $("logoutBtn").addEventListener("click", () => {
+      $("app").classList.add("hidden");
+      $("loginPage").classList.remove("hidden");
+      $("loginForm").reset();
+      $("loginError").textContent = "";
+    });
+    document.querySelectorAll(".nav-btn[data-section]").forEach(button => button.addEventListener("click", () => goToSection(button.dataset.section)));
+    document.querySelectorAll("[data-open-section]").forEach(button => button.addEventListener("click", () => goToSection(button.dataset.openSection)));
+    $("memberPlan").addEventListener("change", updateMemberDates);
+    $("memberStartDate").addEventListener("change", updateMemberDates);
+    $("memberForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      const plan = getPlan($("memberPlan").value);
+      if (!plan) return;
+      await completeCheckout(event.submitter);
+      const memberId = crypto.randomUUID();
+      const startDate = $("memberStartDate").value;
+      const member = { id: memberId, name: $("memberName").value.trim(), phone: $("memberPhone").value.trim() };
+      state.members.push(member);
+      const membershipId = crypto.randomUUID();
+      state.memberships.push({
+        id: membershipId, memberId, planId: plan.id, months: plan.months,
+        startDate, expiryDate: addMonthsToDate(startDate, plan.months), createdAt: Date.now()
+      });
+      state.payments.push({
+        id: crypto.randomUUID(), memberId, membershipId, planId: plan.id,
+        amount: plan.price, date: todayString(), method: $("memberPaymentMethod").value, type: "Membership"
+      });
+      saveState();
+      event.target.reset();
+      $("memberStartDate").value = state.defaultStartDate;
+      refreshAll();
+      alert("Payment successful. Member and membership records updated.");
+    });
+    $("memberSearch").addEventListener("input", renderMembers);
+    $("memberTable").addEventListener("click", event => {
+      const button = event.target.closest("[data-delete-member]");
+      if (!button || !confirm("Delete this member and all related records? The data will be retained in hidden trash.")) return;
+      const memberId = button.dataset.deleteMember;
+      const member = getMember(memberId);
+      state.trash.push({
+        deletedAt: todayString(), reason: "Deleted by administrator", member,
+        memberships: state.memberships.filter(item => item.memberId === memberId),
+        payments: state.payments.filter(payment => payment.memberId === memberId)
+      });
+      state.members = state.members.filter(item => item.id !== memberId);
+      state.memberships = state.memberships.filter(item => item.memberId !== memberId);
+      state.payments = state.payments.filter(payment => payment.memberId !== memberId);
+      saveState();
+      refreshAll();
+    });
+    $("saveDefaultDate").addEventListener("click", () => {
+      if (!$("defaultStartDate").value) return;
+      state.defaultStartDate = $("defaultStartDate").value;
+      saveState();
+      $("memberStartDate").value = state.defaultStartDate;
+      updateMemberDates();
+    });
+    $("durationFilters").addEventListener("click", event => {
+      const button = event.target.closest("[data-months]");
+      if (!button) return;
+      selectedDuration = button.dataset.months;
+      $("durationFilters").querySelectorAll("button").forEach(item => item.classList.toggle("active", item === button));
+      renderMemberships();
+    });
+    $("statusFilters").addEventListener("click", event => {
+      const button = event.target.closest("[data-status]");
+      if (!button) return;
+      selectedStatus = button.dataset.status;
+      $("statusFilters").querySelectorAll("button").forEach(item => item.classList.toggle("active", item === button));
+      renderStatus();
+    });
+    ["renewMember", "renewPlan", "renewDate"].forEach(id => $(id).addEventListener("change", updateRenewalDates));
+    $("renewalForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      const member = getMember($("renewMember").value);
+      const plan = getPlan($("renewPlan").value);
+      if (!member || !plan) return;
+      const renewalDate = $("renewDate").value;
+      const current = currentMembership(member.id, renewalDate);
+      const startDate = current && current.expiryDate >= renewalDate ? current.expiryDate : renewalDate;
+      await completeCheckout(event.submitter);
+      const membershipId = crypto.randomUUID();
+      state.memberships.push({
+        id: membershipId, memberId: member.id, planId: plan.id, months: plan.months,
+        renewedOn: renewalDate, startDate, expiryDate: addMonthsToDate(startDate, plan.months), createdAt: Date.now()
+      });
+      state.payments.push({
+        id: crypto.randomUUID(), memberId: member.id, membershipId, planId: plan.id,
+        amount: plan.price, date: todayString(), method: $("renewPaymentMethod").value, type: "Renewal"
+      });
+      saveState();
+      refreshAll();
+      $("renewDate").value = todayString();
+      updateRenewalDates();
+      alert("Payment successful. Renewal, plan, and membership records updated.");
+    });
+
+    $("memberStartDate").value = state.defaultStartDate;
+    $("renewDate").value = todayString();
+    autoArchiveInactiveMembers();
+    refreshAll();
+  </script>
+  <script src="supabase-config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="supabase-app.js" defer></script>
+</body>
+</html>
